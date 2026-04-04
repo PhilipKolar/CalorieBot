@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart calorie-bot when .env changes
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl restart calorie-bot

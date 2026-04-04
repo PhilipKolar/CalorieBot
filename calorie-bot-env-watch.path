@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch calorie-bot .env for changes
+
+[Path]
+PathModified=/home/phil/repos/calorie-bot/.env
+PathModified=/home/phil/repos/calorie-bot/bot.py
+
+[Install]
+WantedBy=multi-user.target
