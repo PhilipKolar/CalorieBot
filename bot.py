@@ -68,14 +68,14 @@ PROMPT = """You are a nutrition data extractor. The user has sent an image of fo
 Extract the following and return ONLY valid JSON, no explanation:
 {
   "food_name": "...",
-  "calories": <number or null>,
-  "protein": <grams as number or null>,
-  "fat": <grams as number or null>,
-  "carbs": <grams as number or null>
+  "calories": <number>,
+  "protein": <grams as number>,
+  "fat": <grams as number>,
+  "carbs": <grams as number>
 }
 
 Rules:
-- All macro values should be numbers (not strings), null if unknown
+- All macro values must be numbers — never null. If exact values aren't visible, use your knowledge of the food to estimate them
 - If there are multiple items, sum them or pick the most prominent one
 - Do not include units in the numbers, just the numeric value
 
@@ -171,13 +171,14 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     name, cals, pro, fat, carbs = row
+    fmt = lambda v: int(v) if v is not None else "?"
     await update.message.reply_text(
         f"Logged!\n\n"
         f"*{name}*\n"
-        f"Calories: {cals}\n"
-        f"Protein: {pro}g\n"
-        f"Fat: {fat}g\n"
-        f"Carbs: {carbs}g",
+        f"Calories: {fmt(cals)}\n"
+        f"Protein: {fmt(pro)}g\n"
+        f"Fat: {fmt(fat)}g\n"
+        f"Carbs: {fmt(carbs)}g",
         parse_mode="Markdown",
     )
 
