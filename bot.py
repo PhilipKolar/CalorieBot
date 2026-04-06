@@ -21,9 +21,16 @@ ALLOWED_USER_ID = int(os.environ["ALLOWED_USER_ID"])
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.readonly"]
 creds = Credentials.from_service_account_file(os.environ["GOOGLE_SHEETS_CREDS"], scopes=SCOPES)
 gc = gspread.authorize(creds)
-sheet = gc.open(os.environ["SPREADSHEET_NAME"]).worksheet("FoodDatabase")
+sheet = None
 
 claude = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+
+def get_sheet():
+    global sheet
+    if sheet is None:
+        sheet = gc.open(os.environ["SPREADSHEET_NAME"]).worksheet("FoodDatabase")
+    return sheet
 
 
 def insert_row_in_table(worksheet, row):
@@ -157,7 +164,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     try:
-        insert_row_in_table(sheet, row)
+        insert_row_in_table(get_sheet(), row)
     except Exception as e:
         log.exception("Failed to write to sheet")
         await update.message.reply_text(f"Extracted data but failed to write to sheet: {e}")
